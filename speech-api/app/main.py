@@ -5,8 +5,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
+from app.routers.realtime_transcription_router import router as realtime_transcription_router
 from app.routers.transcription_router import router as transcription_router
 from app.schemas import HealthResponse
+from app.services.realtime_transcription_service import RealtimeTranscriptionService
 from app.services.whisper_service import WhisperService
 
 
@@ -20,6 +22,7 @@ async def lifespan(app: FastAPI):
         device=settings.whisper_device,
         compute_type=settings.whisper_compute_type,
     )
+    app.state.realtime_transcription_service = RealtimeTranscriptionService()
     yield
 
 
@@ -51,3 +54,4 @@ async def health_check() -> HealthResponse:
 
 
 app.include_router(transcription_router)
+app.include_router(realtime_transcription_router)
