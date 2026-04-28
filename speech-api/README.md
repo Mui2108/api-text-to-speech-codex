@@ -35,7 +35,7 @@ speech-api/
   - `GET /api/realtime-transcriptions/sessions/{session_id}`
 - รองรับไฟล์: `mp3`, `wav`, `webm`, `m4a`, `mp4`
 - เปิด `vad_filter=True`
-- ตั้งค่า `vad_parameters={"min_silence_duration_ms": 500}`
+- ตั้งค่า `beam_size=10`, `best_of=10`, `initial_prompt` สำหรับภาษาไทย และ `vad_parameters={"min_silence_duration_ms": 300}`
 
 ## Setup
 
@@ -71,7 +71,7 @@ uvicorn app.main:app --reload --port 8000
 ## Environment Variables
 
 ```env
-WHISPER_MODEL_SIZE=small
+WHISPER_MODEL_SIZE=medium
 WHISPER_DEVICE=cpu
 WHISPER_COMPUTE_TYPE=int8
 UPLOAD_DIR=uploads
@@ -82,10 +82,27 @@ CORS_ORIGINS=*
 ตัวอย่างสำหรับ GPU:
 
 ```env
-WHISPER_MODEL_SIZE=medium
+WHISPER_MODEL_SIZE=large-v3
 WHISPER_DEVICE=cuda
 WHISPER_COMPUTE_TYPE=float16
 ```
+
+
+## Docker
+
+### Build image
+
+```bash
+docker build -t speech-api:latest ./speech-api
+```
+
+### Run with Docker Compose
+
+```bash
+docker compose up -d --build
+```
+
+API docs: http://localhost:8000/docs
 
 ## Example curl
 

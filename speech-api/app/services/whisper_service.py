@@ -9,9 +9,11 @@ class WhisperService:
         segments, info = self.model.transcribe(
             file_path,
             language=language,
-            beam_size=5,
+            beam_size=10,
+            best_of=10,
+            initial_prompt="This is Thai speech transcription.",
             vad_filter=True,
-            vad_parameters={"min_silence_duration_ms": 500},
+            vad_parameters={"min_silence_duration_ms": 300},
         )
 
         segment_list: list[dict] = []
