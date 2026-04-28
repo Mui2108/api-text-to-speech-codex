@@ -87,6 +87,23 @@ WHISPER_DEVICE=cuda
 WHISPER_COMPUTE_TYPE=float16
 ```
 
+
+## Docker
+
+### Build image
+
+```bash
+docker build -t speech-api:latest ./speech-api
+```
+
+### Run with Docker Compose
+
+```bash
+docker compose up -d --build
+```
+
+API docs: http://localhost:8000/docs
+
 ## Example curl
 
 ```bash

@@ -1,0 +1,19 @@
+services:
+  speech-api:
+    build:
+      context: ./speech-api
+      dockerfile: Dockerfile
+    image: speech-api:latest
+    container_name: speech-api
+    ports:
+      - "8000:8000"
+    environment:
+      WHISPER_MODEL_SIZE: ${WHISPER_MODEL_SIZE:-small}
+      WHISPER_DEVICE: ${WHISPER_DEVICE:-cpu}
+      WHISPER_COMPUTE_TYPE: ${WHISPER_COMPUTE_TYPE:-int8}
+      UPLOAD_DIR: ${UPLOAD_DIR:-uploads}
+      MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB:-200}
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+    restart: unless-stopped
+    volumes:
+      - ./speech-api/uploads:/app/uploads
