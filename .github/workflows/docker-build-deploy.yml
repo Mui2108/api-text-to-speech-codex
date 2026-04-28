@@ -1,0 +1,32 @@
+name: Speech API Docker Build & Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - work
+    paths:
+      - 'speech-api/**'
+      - 'docker-compose.yml'
+      - '.github/workflows/docker-build-deploy.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build speech-api image
+        run: docker compose build speech-api
+
+      - name: Stop existing container
+        run: docker compose down speech-api 2>/dev/null || true
+
+      - name: Deploy container
+        run: docker compose up -d speech-api
+
+      - name: Cleanup dangling images
+        run: docker image prune -f
