@@ -22,6 +22,9 @@ jobs:
       - name: Build speech-api image
         run: docker compose build speech-api
 
+      - name: Stop existing container
+        run: docker compose down speech-api 2>/dev/null || true
+
       - name: Deploy container
         run: docker compose up -d speech-api
 
