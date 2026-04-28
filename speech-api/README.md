@@ -28,6 +28,11 @@ speech-api/
 - `POST /api/transcriptions` (multipart/form-data)
   - `file`: UploadFile (required)
   - `language`: string (optional เช่น `th`, `en`)
+- เตรียม REST flow สำหรับ realtime/chunk session (ยังไม่เปิด WebSocket)
+  - `POST /api/realtime-transcriptions/sessions`
+  - `POST /api/realtime-transcriptions/sessions/{session_id}/chunks`
+  - `POST /api/realtime-transcriptions/sessions/{session_id}/close`
+  - `GET /api/realtime-transcriptions/sessions/{session_id}`
 - รองรับไฟล์: `mp3`, `wav`, `webm`, `m4a`, `mp4`
 - เปิด `vad_filter=True`
 - ตั้งค่า `vad_parameters={"min_silence_duration_ms": 500}`
@@ -113,6 +118,6 @@ const transcribeAudio = async (file: File) => {
 
 ## Notes
 
-- ยังไม่รวม WebSocket realtime
+- ยังไม่รวม WebSocket realtime (ออกแบบ service/route รองรับไว้แล้ว)
 - ยังไม่รวม auth/database/queue/diarization
 - temp file จะถูกลบใน `finally` ทุกครั้งหลังจบงาน
