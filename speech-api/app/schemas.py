@@ -59,7 +59,6 @@ class MeetingChunkResponse(BaseModel):
     index: int
     start_time: str
     end_time: str
-    duration_seconds: float
     status: str
     text: str | None = None
     error: str | None = None
@@ -73,8 +72,6 @@ class MeetingJobResponse(BaseModel):
     total_chunks: int
     completed_chunks: int
     error: str | None = None
-    created_at: datetime
-    updated_at: datetime
     chunks: list[MeetingChunkResponse]
 
 

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from pathlib import Path
-import shutil
 from threading import Lock
 from uuid import uuid4
 
@@ -74,7 +73,15 @@ class MeetingTranscriptionService:
             if not chunks:
                 raise RuntimeError("No audio chunks were generated from the uploaded video.")
 
-            prepared_chunks = [{**chunk, "status": "pending", "text": None, "error": None} for chunk in chunks]
+            prepared_chunks = [
+                {
+                    **chunk,
+                    "status": "pending",
+                    "text": None,
+                    "error": None,
+                }
+                for chunk in chunks
+            ]
             self._update_job(job_id, chunks=prepared_chunks, total_chunks=len(prepared_chunks))
 
             for index, chunk in enumerate(prepared_chunks):
@@ -88,33 +95,19 @@ class MeetingTranscriptionService:
                 finally:
                     self._increment_progress(job_id)
 
-            self._set_final_status(job_id)
+            final_job = self.jobs.get(job_id)
+            if final_job:
+                job_status = "completed" if final_job["total_chunks"] > 0 else "failed"
+                self._update_job(job_id, status=job_status)
         except Exception as exc:
             self._update_job(job_id, status="failed", error=str(exc))
         finally:
             delete_file_safely(self.jobs.get(job_id, {}).get("file_path"))
             delete_file_safely(audio_path)
-            if chunks_dir:
-                shutil.rmtree(chunks_dir, ignore_errors=True)
-
-    def _set_final_status(self, job_id: str) -> None:
-        with self._lock:
-            job = self.jobs.get(job_id)
-            if not job:
-                return
-            done_count = sum(1 for chunk in job["chunks"] if chunk.get("status") == "done")
-            failed_count = sum(1 for chunk in job["chunks"] if chunk.get("status") == "failed")
-
-            if done_count == job["total_chunks"] and done_count > 0:
-                job["status"] = "completed"
-            elif done_count > 0 and failed_count > 0:
-                job["status"] = "partial_failed"
-            elif failed_count == job["total_chunks"] and failed_count > 0:
-                job["status"] = "failed"
-            else:
-                job["status"] = "failed"
-
-            job["updated_at"] = datetime.now(timezone.utc)
+            if chunks_dir and chunks_dir.exists():
+                for chunk_file in chunks_dir.glob("chunk_*.wav"):
+                    delete_file_safely(str(chunk_file))
+                chunks_dir.rmdir()
 
     def _update_job(self, job_id: str, **updates: object) -> None:
         with self._lock:
@@ -152,8 +145,6 @@ class MeetingTranscriptionService:
             "total_chunks": job["total_chunks"],
             "completed_chunks": job["completed_chunks"],
             "error": job["error"],
-            "created_at": job["created_at"],
-            "updated_at": job["updated_at"],
             "chunks": [self._public_chunk(chunk) for chunk in job["chunks"]],
         }
 
@@ -164,7 +155,6 @@ class MeetingTranscriptionService:
             "index": chunk["index"],
             "start_time": chunk["start_time"],
             "end_time": chunk["end_time"],
-            "duration_seconds": chunk["duration_seconds"],
             "status": chunk["status"],
             "text": chunk.get("text"),
             "error": chunk.get("error"),
