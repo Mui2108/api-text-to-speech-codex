@@ -1,7 +1,8 @@
 fastapi
 uvicorn[standard]
-faster-whisper
 python-multipart
 pydantic
 pydantic-settings
 python-dotenv
+
+httpx

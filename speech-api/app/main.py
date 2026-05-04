@@ -18,15 +18,14 @@ async def lifespan(app: FastAPI):
     Path(settings.upload_dir).mkdir(parents=True, exist_ok=True)
 
     app.state.whisper_service = WhisperService(
-        model_size=settings.whisper_model_size,
-        device=settings.whisper_device,
-        compute_type=settings.whisper_compute_type,
+        api_key=settings.elevenlabs_api_key,
+        model_id=settings.elevenlabs_model_id,
     )
     app.state.realtime_transcription_service = RealtimeTranscriptionService()
     yield
 
 
-app = FastAPI(title="faster-whisper-api", lifespan=lifespan)
+app = FastAPI(title="elevenlabs-speech-to-text-api", lifespan=lifespan)
 settings = get_settings()
 
 origins = settings.cors_origins_list
@@ -50,7 +49,7 @@ else:
 
 @app.get("/health", response_model=HealthResponse)
 async def health_check() -> HealthResponse:
-    return HealthResponse(status="ok", service="faster-whisper-api")
+    return HealthResponse(status="ok", service="elevenlabs-speech-to-text-api")
 
 
 app.include_router(transcription_router)
