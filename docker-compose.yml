@@ -7,12 +7,8 @@ services:
     container_name: speech-api
     ports:
       - "8000:8000"
-    environment:
-      ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY}
-      ELEVENLABS_MODEL_ID: ${ELEVENLABS_MODEL_ID:-scribe_v1}
-      UPLOAD_DIR: ${UPLOAD_DIR:-uploads}
-      MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB:-200}
-      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+    env_file:
+      - ./speech-api/.env
     restart: unless-stopped
     volumes:
       - ./speech-api/uploads:/app/uploads
