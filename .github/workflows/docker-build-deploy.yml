@@ -30,7 +30,7 @@ jobs:
           EOF_ENV
 
       - name: Deploy speech-api
-        run: docker compose up -d --build speech-api
+        run: docker compose up -d --build --force-recreate speech-api
 
       - name: Cleanup dangling images
         run: docker image prune -f
