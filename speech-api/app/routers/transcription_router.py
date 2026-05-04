@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile, status
+import httpx
 
 from app.config import Settings, get_settings
 from app.schemas import TranscriptionResponse
@@ -28,6 +29,21 @@ async def create_transcription(
         return TranscriptionResponse(**result)
     except HTTPException:
         raise
+    except RuntimeError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Transcription service unavailable: {str(exc)}",
+        ) from exc
+    except httpx.HTTPStatusError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Upstream transcription service error: {exc.response.text}",
+        ) from exc
+    except httpx.RequestError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Unable to reach upstream transcription service: {str(exc)}",
+        ) from exc
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

@@ -19,14 +19,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build speech-api image
-        run: docker compose build speech-api
+      - name: Create speech-api .env
+        run: |
+          cat > speech-api/.env <<EOF_ENV
+          ELEVENLABS_API_KEY=${{ secrets.ELEVENLABS_API_KEY }}
+          ELEVENLABS_MODEL_ID=scribe_v1
+          UPLOAD_DIR=uploads
+          MAX_UPLOAD_SIZE_MB=200
+          CORS_ORIGINS=*
+          EOF_ENV
 
-      - name: Stop existing container
-        run: docker compose down speech-api 2>/dev/null || true
-
-      - name: Deploy container
-        run: docker compose up -d speech-api
+      - name: Deploy speech-api
+        run: docker compose up -d --build speech-api
 
       - name: Cleanup dangling images
         run: docker image prune -f
