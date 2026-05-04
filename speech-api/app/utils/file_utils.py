@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from fastapi import HTTPException, UploadFile, status
 
-ALLOWED_EXTENSIONS = {".mp3", ".wav", ".webm", ".m4a", ".mp4"}
+ALLOWED_EXTENSIONS = {".mp3", ".wav", ".webm", ".m4a", ".mp4", ".mov", ".mkv", ".m4v"}
 ALLOWED_CONTENT_TYPES = {
     "audio/mpeg",
     "audio/mp3",
@@ -14,7 +14,12 @@ ALLOWED_CONTENT_TYPES = {
     "audio/x-m4a",
     "video/mp4",
     "video/webm",
+    "video/quicktime",
+    "video/x-matroska",
+    "video/x-m4v",
 }
+VIDEO_EXTENSIONS = {".mp4", ".webm", ".mov", ".mkv", ".m4v"}
+VIDEO_CONTENT_TYPES = {"video/mp4", "video/webm", "video/quicktime", "video/x-matroska", "video/x-m4v"}
 
 
 def validate_file_extension(filename: str) -> str:
@@ -32,6 +37,20 @@ def validate_content_type(content_type: str | None) -> None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Unsupported content type: {content_type}",
+        )
+
+
+def validate_video_upload(filename: str, content_type: str | None) -> None:
+    extension = validate_file_extension(filename)
+    if extension not in VIDEO_EXTENSIONS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unsupported meeting video extension: {extension}",
+        )
+    if content_type and content_type.lower() not in VIDEO_CONTENT_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unsupported meeting video content type: {content_type}",
         )
 
 
