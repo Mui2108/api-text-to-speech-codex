@@ -5,21 +5,13 @@ import httpx
 
 class WhisperService:
     def __init__(self, api_key: str, model_id: str) -> None:
-<<<<<<< codex/evaluate-elevenlabs-speech-to-text-effectiveness-p49n81
-=======
-        if not api_key:
-            raise ValueError("ELEVENLABS_API_KEY is required")
->>>>>>> main
         self.api_key = api_key
         self.model_id = model_id
 
     def transcribe(self, file_path: str, language: str | None = None) -> dict:
-<<<<<<< codex/evaluate-elevenlabs-speech-to-text-effectiveness-p49n81
         if not self.api_key:
             raise RuntimeError("ELEVENLABS_API_KEY is not configured")
 
-=======
->>>>>>> main
         endpoint = "https://api.elevenlabs.io/v1/speech-to-text"
         payload = {"model_id": self.model_id}
         if language:

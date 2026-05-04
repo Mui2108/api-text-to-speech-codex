@@ -36,10 +36,7 @@ speech-api/
 - รองรับไฟล์: `mp3`, `wav`, `webm`, `m4a`, `mp4`
 - เปิด `vad_filter=True`
 - ใช้ ElevenLabs Speech-to-Text API (`model_id` ค่าเริ่มต้น `scribe_v1`)
-<<<<<<< codex/evaluate-elevenlabs-speech-to-text-effectiveness-p49n81
 - หากยังไม่ตั้งค่า `ELEVENLABS_API_KEY` แอปยัง start ได้ แต่ endpoint ถอดเสียงจะตอบ 503
-=======
->>>>>>> main
 
 ## Setup
 
