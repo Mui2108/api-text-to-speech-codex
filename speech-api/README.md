@@ -1,6 +1,6 @@
-# Speech API (FastAPI + faster-whisper)
+# Speech API (FastAPI + ElevenLabs Speech-to-Text)
 
-Backend API สำหรับรับไฟล์เสียง/วิดีโอแล้วถอดเสียงเป็นข้อความ โดยรองรับภาษาไทยเป็นหลัก และออกแบบให้สามารถต่อยอดเป็น chunk-based realtime transcription ได้ในอนาคต
+Backend API สำหรับรับไฟล์เสียง/วิดีโอแล้วถอดเสียงเป็นข้อความด้วย ElevenLabs Speech-to-Text โดยรองรับภาษาไทยเป็นหลัก และออกแบบให้สามารถต่อยอดเป็น chunk-based realtime transcription ได้ในอนาคต
 
 ## Project Structure
 
@@ -35,7 +35,8 @@ speech-api/
   - `GET /api/realtime-transcriptions/sessions/{session_id}`
 - รองรับไฟล์: `mp3`, `wav`, `webm`, `m4a`, `mp4`
 - เปิด `vad_filter=True`
-- ตั้งค่า `beam_size=10`, `best_of=10`, `initial_prompt` สำหรับภาษาไทย และ `vad_parameters={"min_silence_duration_ms": 300}`
+- ใช้ ElevenLabs Speech-to-Text API (`model_id` ค่าเริ่มต้น `scribe_v1`)
+- หากยังไม่ตั้งค่า `ELEVENLABS_API_KEY` แอปยัง start ได้ แต่ endpoint ถอดเสียงจะตอบ 503
 
 ## Setup
 
@@ -71,21 +72,14 @@ uvicorn app.main:app --reload --port 8000
 ## Environment Variables
 
 ```env
-WHISPER_MODEL_SIZE=medium
-WHISPER_DEVICE=cpu
-WHISPER_COMPUTE_TYPE=int8
+ELEVENLABS_API_KEY=your_api_key
+ELEVENLABS_MODEL_ID=scribe_v1
 UPLOAD_DIR=uploads
 MAX_UPLOAD_SIZE_MB=200
 CORS_ORIGINS=*
 ```
 
-ตัวอย่างสำหรับ GPU:
 
-```env
-WHISPER_MODEL_SIZE=large-v3
-WHISPER_DEVICE=cuda
-WHISPER_COMPUTE_TYPE=float16
-```
 
 
 ## Docker
