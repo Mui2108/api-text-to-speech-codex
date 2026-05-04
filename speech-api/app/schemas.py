@@ -52,3 +52,29 @@ class RealtimeSessionCloseResponse(BaseModel):
 class HealthResponse(BaseModel):
     status: str
     service: str
+
+
+class MeetingChunkResponse(BaseModel):
+    id: str
+    index: int
+    start_time: str
+    end_time: str
+    status: str
+    text: str | None = None
+    error: str | None = None
+
+
+class MeetingJobResponse(BaseModel):
+    job_id: str
+    file_name: str
+    status: str
+    progress: int
+    total_chunks: int
+    completed_chunks: int
+    error: str | None = None
+    chunks: list[MeetingChunkResponse]
+
+
+class MeetingChunksResponse(BaseModel):
+    job_id: str
+    chunks: list[MeetingChunkResponse]
