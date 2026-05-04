@@ -7,9 +7,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
 from app.routers.realtime_transcription_router import router as realtime_transcription_router
 from app.routers.transcription_router import router as transcription_router
+from app.routers.meeting_transcription_router import router as meeting_transcription_router
 from app.schemas import HealthResponse
 from app.services.realtime_transcription_service import RealtimeTranscriptionService
 from app.services.whisper_service import WhisperService
+from app.services.meeting_transcription_service import MeetingTranscriptionService
 
 
 @asynccontextmanager
@@ -22,6 +24,10 @@ async def lifespan(app: FastAPI):
         model_id=settings.elevenlabs_model_id,
     )
     app.state.realtime_transcription_service = RealtimeTranscriptionService()
+    app.state.meeting_transcription_service = MeetingTranscriptionService(
+        whisper_service=app.state.whisper_service,
+        upload_dir=settings.upload_dir,
+    )
     yield
 
 
@@ -54,3 +60,4 @@ async def health_check() -> HealthResponse:
 
 app.include_router(transcription_router)
 app.include_router(realtime_transcription_router)
+app.include_router(meeting_transcription_router)
